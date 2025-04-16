@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '3.4.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+application {
+    mainClass = 'project.App'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '21'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
+    // implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+    implementation 'org.json:json:20250107'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Jackson 의존성 명시적 추가
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.3'
+
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.4.Final'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+}
+
+test {
+    useJUnitPlatform()
+}
