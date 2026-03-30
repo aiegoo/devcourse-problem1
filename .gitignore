@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+app/build/
+**/bin/
+
+# Compiled class files
+*.class
+
+# SQLite DB
+data/*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Solution tracker (local only)
+SOLUTION_TRACKER.md
