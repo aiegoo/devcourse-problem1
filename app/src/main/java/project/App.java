@@ -149,16 +149,14 @@ public class App {
             String orderField = resolveProductSort(sort);
             @SuppressWarnings("unchecked")
             List<Object[]> rows = entityManager.createNativeQuery(
-                "SELECT id, name, price, category_id FROM product ORDER BY " + orderField
+                "SELECT name, price FROM product ORDER BY " + orderField
             ).getResultList();
 
             List<Map<String, Object>> productList = new ArrayList<>();
             for (Object[] row : rows) {
                 Map<String, Object> m = new HashMap<>();
-                m.put("id", row[0]);
-                m.put("name", row[1]);
-                m.put("price", row[2]);
-                m.put("category_id", row[3]);
+                m.put("name", row[0]);
+                m.put("price", row[1]);
                 productList.add(m);
             }
             return ResponseEntity.ok(Map.of("products", productList));
