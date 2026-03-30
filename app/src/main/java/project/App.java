@@ -241,7 +241,6 @@ public class App {
             }
             Object[] row = rows.get(0);
             Map<String, Object> m = new HashMap<>();
-            m.put("id", row[0]);
             m.put("name", row[1]);
             return ResponseEntity.ok(m);
         }
