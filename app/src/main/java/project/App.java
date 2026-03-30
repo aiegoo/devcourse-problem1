@@ -166,7 +166,7 @@ public class App {
         public ResponseEntity<?> getProduct(@PathVariable int productId) {
             @SuppressWarnings("unchecked")
             List<Object[]> rows = entityManager.createNativeQuery(
-                "SELECT id, name, price, category_id FROM product WHERE id = :id"
+                "SELECT name, price FROM product WHERE id = :id"
             ).setParameter("id", productId).getResultList();
 
             if (rows.isEmpty()) {
@@ -176,10 +176,8 @@ public class App {
             }
             Object[] row = rows.get(0);
             Map<String, Object> m = new HashMap<>();
-            m.put("id", row[0]);
-            m.put("name", row[1]);
-            m.put("price", row[2]);
-            m.put("category_id", row[3]);
+            m.put("name", row[0]);
+            m.put("price", row[1]);
             return ResponseEntity.ok(m);
         }
 
@@ -224,7 +222,7 @@ public class App {
         private EntityManager entityManager;
 
         @GetMapping
-        public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "name") String sort) {
+        public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "id") String sort) {
             String orderField = "id".equals(sort) ? "id" : "name";
             @SuppressWarnings("unchecked")
             List<String> names = entityManager.createNativeQuery(
