@@ -138,22 +138,84 @@ public class App {
         @PersistenceContext
         private EntityManager entityManager;
 
+        private String resolveProductSort(String sort) {
+            if ("name".equals(sort)) return "name";
+            if ("price".equals(sort)) return "price";
+            return "id";
+        }
+
         @GetMapping
         public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "id") String sort) {
-            return ResponseEntity.ok(Map.of());
+            String orderField = resolveProductSort(sort);
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = entityManager.createNativeQuery(
+                "SELECT id, name, price, category_id FROM product ORDER BY " + orderField
+            ).getResultList();
+
+            List<Map<String, Object>> productList = new ArrayList<>();
+            for (Object[] row : rows) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", row[0]);
+                m.put("name", row[1]);
+                m.put("price", row[2]);
+                m.put("category_id", row[3]);
+                productList.add(m);
+            }
+            return ResponseEntity.ok(Map.of("products", productList));
         }
 
         @GetMapping("/{productId}")
         public ResponseEntity<?> getProduct(@PathVariable int productId) {
-            return ResponseEntity.ok(Map.of());
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = entityManager.createNativeQuery(
+                "SELECT id, name, price, category_id FROM product WHERE id = :id"
+            ).setParameter("id", productId).getResultList();
+
+            if (rows.isEmpty()) {
+                Map<String, Object> err = new HashMap<>();
+                err.put("error", "Product not found");
+                return ResponseEntity.status(404).body(err);
+            }
+            Object[] row = rows.get(0);
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", row[0]);
+            m.put("name", row[1]);
+            m.put("price", row[2]);
+            m.put("category_id", row[3]);
+            return ResponseEntity.ok(m);
         }
 
         @GetMapping("/category/{categoryId}")
         public ResponseEntity<?> getProductsByCategory(
                 @PathVariable int categoryId,
                 @RequestParam(defaultValue = "id") String sort) {
-            
-            return ResponseEntity.ok(Map.of());
+
+            @SuppressWarnings("unchecked")
+            List<Object[]> catCheck = entityManager.createNativeQuery(
+                "SELECT id FROM category WHERE id = :id"
+            ).setParameter("id", categoryId).getResultList();
+            if (catCheck.isEmpty()) {
+                Map<String, Object> err = new HashMap<>();
+                err.put("error", "Category not found");
+                return ResponseEntity.status(404).body(err);
+            }
+
+            String orderField = resolveProductSort(sort);
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = entityManager.createNativeQuery(
+                "SELECT id, name, price, category_id FROM product WHERE category_id = :categoryId ORDER BY " + orderField
+            ).setParameter("categoryId", categoryId).getResultList();
+
+            List<Map<String, Object>> productList = new ArrayList<>();
+            for (Object[] row : rows) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", row[0]);
+                m.put("name", row[1]);
+                m.put("price", row[2]);
+                m.put("category_id", row[3]);
+                productList.add(m);
+            }
+            return ResponseEntity.ok(Map.of("products", productList));
         }
     }
 
@@ -165,12 +227,39 @@ public class App {
 
         @GetMapping
         public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "id") String sort) {
-            return ResponseEntity.ok(Map.of());
+            String orderField = "name".equals(sort) ? "name" : "id";
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = entityManager.createNativeQuery(
+                "SELECT id, name FROM category ORDER BY " + orderField
+            ).getResultList();
+
+            List<Map<String, Object>> categoryList = new ArrayList<>();
+            for (Object[] row : rows) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", row[0]);
+                m.put("name", row[1]);
+                categoryList.add(m);
+            }
+            return ResponseEntity.ok(Map.of("categories", categoryList));
         }
 
         @GetMapping("/{categoryId}")
         public ResponseEntity<?> getCategory(@PathVariable int categoryId) {
-            return ResponseEntity.ok(Map.of());
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = entityManager.createNativeQuery(
+                "SELECT id, name FROM category WHERE id = :id"
+            ).setParameter("id", categoryId).getResultList();
+
+            if (rows.isEmpty()) {
+                Map<String, Object> err = new HashMap<>();
+                err.put("error", "Category not found");
+                return ResponseEntity.status(404).body(err);
+            }
+            Object[] row = rows.get(0);
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", row[0]);
+            m.put("name", row[1]);
+            return ResponseEntity.ok(m);
         }
     }
 }
