@@ -171,7 +171,7 @@ public class App {
 
             if (rows.isEmpty()) {
                 Map<String, Object> err = new HashMap<>();
-                err.put("error", "Product not found");
+                err.put("error", "product not found");
                 return ResponseEntity.status(404).body(err);
             }
             Object[] row = rows.get(0);
@@ -194,7 +194,7 @@ public class App {
             ).setParameter("id", categoryId).getResultList();
             if (catCheck.isEmpty()) {
                 Map<String, Object> err = new HashMap<>();
-                err.put("error", "Category not found");
+                err.put("error", "category not found");
                 return ResponseEntity.status(404).body(err);
             }
 
@@ -224,21 +224,14 @@ public class App {
         private EntityManager entityManager;
 
         @GetMapping
-        public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "id") String sort) {
-            String orderField = "name".equals(sort) ? "name" : "id";
+        public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "name") String sort) {
+            String orderField = "id".equals(sort) ? "id" : "name";
             @SuppressWarnings("unchecked")
-            List<Object[]> rows = entityManager.createNativeQuery(
-                "SELECT id, name FROM category ORDER BY " + orderField
+            List<String> names = entityManager.createNativeQuery(
+                "SELECT name FROM category ORDER BY " + orderField
             ).getResultList();
 
-            List<Map<String, Object>> categoryList = new ArrayList<>();
-            for (Object[] row : rows) {
-                Map<String, Object> m = new HashMap<>();
-                m.put("id", row[0]);
-                m.put("name", row[1]);
-                categoryList.add(m);
-            }
-            return ResponseEntity.ok(Map.of("categories", categoryList));
+            return ResponseEntity.ok(Map.of("categories", names));
         }
 
         @GetMapping("/{categoryId}")
@@ -250,7 +243,7 @@ public class App {
 
             if (rows.isEmpty()) {
                 Map<String, Object> err = new HashMap<>();
-                err.put("error", "Category not found");
+                err.put("error", "category not found");
                 return ResponseEntity.status(404).body(err);
             }
             Object[] row = rows.get(0);
